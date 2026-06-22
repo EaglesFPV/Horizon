@@ -1,0 +1,43 @@
+{
+  "name": "horizon",
+  "version": "0.0.0",
+  "description": "Suivi de budget et objectifs d'achat",
+  "main": "main.js",
+  "author": "Horizon",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.horizon.budget",
+    "productName": "Horizon",
+    "files": [
+      "*.html",
+      "*.js",
+      "*.css",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ]
+  }
+}
