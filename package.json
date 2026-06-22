@@ -27,7 +27,8 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}.${ext}",
