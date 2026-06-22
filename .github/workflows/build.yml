@@ -19,7 +19,7 @@ jobs:
           node-version: '20'
 
       - name: Set version to 0.0.0
-        run: npm version 0.0.0 --no-git-tag-version
+        run: npm version 0.0.0 --no-git-tag-version --allow-same-version
 
       - name: Install dependencies
         run: npm install
