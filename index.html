@@ -193,7 +193,22 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
 /* ── Kbd ── */
 .kbd{display:inline-block;background:var(--surface-alt);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);}
 
-  </style>
+  
+/* ── Settings — style SleepTimer ── */
+.set-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0 20px;margin-bottom:16px;overflow:hidden;}
+.set-card-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);padding:16px 0 10px 0;border-bottom:1px solid var(--border);}
+.set-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);}
+.set-item:last-child{border-bottom:none;}
+.set-item-left{flex:1;min-width:0;}
+.set-name{font-size:13px;font-weight:600;color:var(--text);}
+.set-desc{font-size:11.5px;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+.tgl{width:36px;height:20px;border-radius:10px;background:var(--border);flex-shrink:0;cursor:pointer;position:relative;transition:background .2s;}
+.tgl.on{background:var(--accent);}
+.tgl::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.tgl.on::after{transform:translateX(16px);}
+.set-danger .set-name{color:var(--negative);}
+
+</style>
 </head>
 <body>
 
@@ -365,34 +380,79 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
 
     <!-- SETTINGS -->
     <section class="view" id="view-settings">
-      <header class="view-header"><h1>Paramètres</h1><p class="subtitle">Ajuste le fonctionnement d'Horizon.</p></header>
-      <div class="card"><div class="card-head"><span class="eyebrow">Devise</span></div><div class="field"><select id="currency-select"><option value="EUR">€ Euro</option><option value="USD">$ Dollar</option><option value="GBP">£ Livre sterling</option><option value="CHF">CHF Franc suisse</option></select></div></div>
-      <div class="card">
-        <div class="card-head"><span class="eyebrow">Jour de paie</span></div>
-        <p class="hint">Précise quel jour du mois ton argent arrive. Les projections afficheront une date exacte.</p>
-        <div class="field"><label>Jour du mois (1–28, laisser vide pour désactiver)</label><input type="number" id="payday-input" min="1" max="28" placeholder="ex : 16" style="width:140px;" /></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="eyebrow">Rythme d'épargne mensuel</span></div>
-        <p class="hint">Calculé automatiquement sur tes 3 derniers mois. Tu peux forcer une valeur manuelle.</p>
-        <div class="form-row"><div class="field"><label class="checkbox-label"><input type="checkbox" id="rate-override-toggle" />Forcer un montant manuel</label></div><div class="field"><label>Montant / mois</label><input type="number" id="rate-override-value" step="0.01" disabled /></div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="eyebrow">Budgets mensuels par catégorie</span></div>
-        <p class="hint">Un avertissement s'affiche sur le tableau de bord si tu dépasses.</p>
-        <div id="budget-settings-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="eyebrow">Raccourcis clavier</span></div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--text-muted);">
-          <span><span class="kbd">Ctrl 1</span> Tableau de bord</span><span><span class="kbd">Ctrl 2</span> Transactions</span>
-          <span><span class="kbd">Ctrl 3</span> Récurrents</span><span><span class="kbd">Ctrl 4</span> Objectifs</span>
-          <span><span class="kbd">Ctrl 5</span> Statistiques</span><span><span class="kbd">Ctrl 6</span> Paramètres</span>
-          <span><span class="kbd">Échap</span> Fermer modal</span>
+      <header class="view-header"><h1>Paramètres</h1><p class="subtitle">Configure Horizon selon tes préférences.</p></header>
+
+      <!-- Général -->
+      <div class="set-card">
+        <div class="set-card-title">Général</div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Devise</div><div class="set-desc">Monnaie utilisée dans toute l'application</div></div>
+          <select id="currency-select" style="width:160px;"><option value="EUR">€ Euro</option><option value="USD">$ Dollar</option><option value="GBP">£ Livre sterling</option><option value="CHF">CHF Franc suisse</option></select>
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Démarrage automatique</div><div class="set-desc">Lance Horizon au démarrage de Windows</div></div>
+          <div class="tgl" id="tgl-startup" onclick="toggleStartup()"></div>
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Thème</div><div class="set-desc">Apparence de l'interface</div></div>
+          <div class="toggle-group"><button type="button" class="toggle-btn" id="theme-setting-dark" onclick="setThemeFromSettings(false)">Sombre</button><button type="button" class="toggle-btn" id="theme-setting-light" onclick="setThemeFromSettings(true)">Clair</button></div>
         </div>
       </div>
-      <div class="card"><div class="card-head"><span class="eyebrow">Sauvegarde</span></div><div class="button-row"><button class="btn-secondary" id="export-backup-btn">Exporter une sauvegarde</button><button class="btn-secondary" id="import-backup-btn">Importer une sauvegarde</button></div></div>
-      <div class="card card-danger"><div class="card-head"><span class="eyebrow">Zone sensible</span></div><p class="hint">Supprime toutes tes données. Irréversible — exporte une sauvegarde avant.</p><button class="btn-danger" id="reset-data-btn">Réinitialiser toutes les données</button></div>
+
+      <!-- Budget & Épargne -->
+      <div class="set-card">
+        <div class="set-card-title">Budget & Épargne</div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Jour de paie</div><div class="set-desc">Jour du mois où ton argent arrive — les projections affichent alors une date exacte</div></div>
+          <input type="number" id="payday-input" min="1" max="28" placeholder="ex : 16" style="width:100px;" />
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Rythme d'épargne manuel</div><div class="set-desc">Par défaut calculé sur tes 3 derniers mois — active cette option pour forcer une valeur fixe</div></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="tgl" id="tgl-rate-override" onclick="toggleRateOverride()"></div>
+            <input type="number" id="rate-override-value" step="0.01" placeholder="0,00" disabled style="width:120px;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Budgets par catégorie -->
+      <div class="set-card">
+        <div class="set-card-title">Budgets mensuels par catégorie</div>
+        <div class="set-item" style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:0;">
+          <div class="set-desc" style="font-size:12px;">Un avertissement s'affiche sur le tableau de bord si tu dépasses le plafond défini.</div>
+        </div>
+        <div id="budget-settings-list"></div>
+      </div>
+
+      <!-- Raccourcis -->
+      <div class="set-card">
+        <div class="set-card-title">Raccourcis clavier</div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Tableau de bord</div></div><span class="kbd">Ctrl 1</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Transactions</div></div><span class="kbd">Ctrl 2</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Récurrents</div></div><span class="kbd">Ctrl 3</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Objectifs</div></div><span class="kbd">Ctrl 4</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Statistiques</div></div><span class="kbd">Ctrl 5</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Paramètres</div></div><span class="kbd">Ctrl 6</span></div>
+        <div class="set-item"><div class="set-item-left"><div class="set-name">Fermer un modal</div></div><span class="kbd">Échap</span></div>
+      </div>
+
+      <!-- Données -->
+      <div class="set-card">
+        <div class="set-card-title">Données</div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Exporter une sauvegarde</div><div class="set-desc">Enregistre toutes tes données dans un fichier JSON</div></div>
+          <button class="btn-secondary" id="export-backup-btn">Exporter</button>
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Importer une sauvegarde</div><div class="set-desc">Restaure tes données depuis un fichier JSON</div></div>
+          <button class="btn-secondary" id="import-backup-btn">Importer</button>
+        </div>
+        <div class="set-item set-danger">
+          <div class="set-item-left"><div class="set-name">Réinitialiser toutes les données</div><div class="set-desc">Supprime définitivement toutes tes transactions, objectifs et récurrents</div></div>
+          <button class="btn-danger" id="reset-data-btn">Réinitialiser</button>
+        </div>
+      </div>
+
     </section>
 
     <!-- À PROPOS -->
@@ -747,44 +807,104 @@ function renderCategoryChart(){
 }
 
 // ── Settings ──
-function renderSettings(){
-  document.getElementById('currency-select').value=state.settings.currency;
-  document.getElementById('payday-input').value=state.settings.payday||'';
-  const has=state.settings.monthlySavingsOverride!=null;
-  document.getElementById('rate-override-toggle').checked=has;document.getElementById('rate-override-value').disabled=!has;document.getElementById('rate-override-value').value=has?state.settings.monthlySavingsOverride:'';
+async function renderSettings(){
+  document.getElementById('currency-select').value = state.settings.currency;
+  document.getElementById('payday-input').value = state.settings.payday || '';
+  const has = state.settings.monthlySavingsOverride != null;
+  const tglRate = document.getElementById('tgl-rate-override');
+  if(tglRate){ tglRate.classList.toggle('on', has); }
+  const rateInp = document.getElementById('rate-override-value');
+  if(rateInp){ rateInp.disabled = !has; rateInp.value = has ? state.settings.monthlySavingsOverride : ''; }
+  // Startup
+  try {
+    const isStartup = await ipcRenderer.invoke('get-startup');
+    const tgl = document.getElementById('tgl-startup');
+    if(tgl) tgl.classList.toggle('on', isStartup);
+  } catch {}
+  // Theme buttons
+  const light = state.settings.lightMode;
+  document.getElementById('theme-setting-dark')?.classList.toggle('is-active', !light);
+  document.getElementById('theme-setting-light')?.classList.toggle('is-active', light);
   renderBudgetSettings();
 }
-function renderBudgetSettings(){
-  if(!state.settings.budgets)state.settings.budgets={};const budgets=state.settings.budgets;
-  document.getElementById('budget-settings-list').innerHTML=EXPENSE_CATS.map(cat=>`<div class="budget-row"><span class="budget-label">${esc(cat)}</span><input type="number" min="0" step="1" placeholder="Pas de limite" value="${budgets[cat]||''}" style="width:150px;" data-budget-cat="${esc(cat)}" class="budget-input"/></div>`).join('');
-  document.querySelectorAll('.budget-input').forEach(inp=>inp.addEventListener('change',async e=>{const cat=e.target.dataset.budgetCat,val=parseFloat(e.target.value);if(!state.settings.budgets)state.settings.budgets={};if(isFinite(val)&&val>0)state.settings.budgets[cat]=val;else delete state.settings.budgets[cat];await persist();renderDashboard();renderStats();}));
-}
-function setupSettings(){
-  document.getElementById('currency-select').addEventListener('change',async e=>{state.settings.currency=e.target.value;await persist();renderAll();});
-  document.getElementById('payday-input').addEventListener('change',async e=>{const v=parseInt(e.target.value);state.settings.payday=(isFinite(v)&&v>=1&&v<=28)?v:null;await persist();renderDashboard();renderGoals();});
-  document.getElementById('rate-override-toggle').addEventListener('change',async e=>{const inp=document.getElementById('rate-override-value');inp.disabled=!e.target.checked;if(!e.target.checked){state.settings.monthlySavingsOverride=null;await persist();renderDashboard();}else if(inp.value){state.settings.monthlySavingsOverride=parseFloat(inp.value);await persist();renderDashboard();}});
-  document.getElementById('rate-override-value').addEventListener('change',async e=>{if(!document.getElementById('rate-override-toggle').checked)return;const v=parseFloat(e.target.value);state.settings.monthlySavingsOverride=isFinite(v)?v:null;await persist();renderDashboard();});
-  document.getElementById('export-backup-btn').addEventListener('click',async()=>{const ok=await ipcRenderer.invoke('dialog:exportBackup',state);toast(ok?'Sauvegarde exportée.':'Export annulé.');});
-  document.getElementById('import-backup-btn').addEventListener('click',async()=>{const r=await ipcRenderer.invoke('dialog:importBackup');if(!r)return;if(r.error){toast('Fichier invalide.');return;}if(!window.confirm('Remplacer tes données actuelles ?'))return;state={settings:{currency:'EUR',monthlySavingsOverride:null,payday:null,lightMode:false,budgets:{},...(r.settings||{})},transactions:Array.isArray(r.transactions)?r.transactions:[],goals:Array.isArray(r.goals)?r.goals:[],recurring:Array.isArray(r.recurring)?r.recurring:[]};await persist();applyTheme();renderAll();toast('Sauvegarde importée.');});
-  document.getElementById('reset-data-btn').addEventListener('click',async()=>{if(!window.confirm('Supprimer toutes les données ?'))return;state.transactions=[];state.goals=[];state.recurring=[];await persist();renderAll();toast('Données réinitialisées.');});
+
+async function toggleStartup(){
+  const tgl = document.getElementById('tgl-startup');
+  const cur = await ipcRenderer.invoke('get-startup');
+  const next = !cur;
+  ipcRenderer.send('set-startup', next);
+  if(tgl) tgl.classList.toggle('on', next);
+  toast(next ? 'Démarrage automatique activé.' : 'Démarrage automatique désactivé.');
 }
 
-// ── Contact form ──
-function sendContact(){
-  const name=document.getElementById('contact-name').value.trim(),email=document.getElementById('contact-email').value.trim(),message=document.getElementById('contact-message').value.trim();
-  const btn=document.getElementById('contact-btn'),status=document.getElementById('contact-status');
-  if(!name){showContactStatus('warn','Veuillez entrer votre nom.');return;}
-  if(!email||!email.includes('@')){showContactStatus('warn','Veuillez entrer un email valide.');return;}
-  if(!message){showContactStatus('warn','Veuillez écrire un message.');return;}
-  btn.disabled=true;btn.textContent='Envoi en cours…';
-  ipcRenderer.once('contact-result',(e,res)=>{
-    if(res.ok){showContactStatus('ok','Message envoyé ! Merci pour ton retour.');document.getElementById('contact-name').value='';document.getElementById('contact-email').value='';document.getElementById('contact-message').value='';}
-    else showContactStatus('warn','Erreur lors de l\'envoi. Réessaie plus tard.');
-    btn.disabled=false;btn.textContent='Envoyer';
-  });
-  ipcRenderer.send('send-contact',{name,email,message});
+function toggleRateOverride(){
+  const tgl = document.getElementById('tgl-rate-override');
+  const inp = document.getElementById('rate-override-value');
+  const on = !tgl.classList.contains('on');
+  tgl.classList.toggle('on', on);
+  inp.disabled = !on;
+  if(!on){ state.settings.monthlySavingsOverride = null; persist(); renderDashboard(); }
+  else if(inp.value){ state.settings.monthlySavingsOverride = parseFloat(inp.value); persist(); renderDashboard(); }
 }
-function showContactStatus(type,msg){const el=document.getElementById('contact-status');el.style.color=type==='ok'?'var(--positive)':'var(--negative)';el.style.display='block';el.textContent=msg;}
+window.toggleRateOverride = toggleRateOverride;
+
+function setThemeFromSettings(light){
+  state.settings.lightMode = light;
+  applyTheme();
+  persist();
+  renderSettings();
+}
+
+function renderBudgetSettings(){
+  if(!state.settings.budgets) state.settings.budgets = {};
+  const budgets = state.settings.budgets;
+  const EXPENSE_CATS_LOCAL = ['Logement','Alimentation','Transport','Loisirs','Santé','Abonnements','Shopping','Achat objectif','Autre dépense'];
+  document.getElementById('budget-settings-list').innerHTML = EXPENSE_CATS_LOCAL.map(cat => `
+    <div class="set-item">
+      <div class="set-item-left"><div class="set-name">${esc(cat)}</div></div>
+      <input type="number" min="0" step="1" placeholder="Pas de limite" value="${budgets[cat]||''}" style="width:150px;" data-budget-cat="${esc(cat)}" class="budget-input"/>
+    </div>`).join('');
+  document.querySelectorAll('.budget-input').forEach(inp => inp.addEventListener('change', async e => {
+    const cat = e.target.dataset.budgetCat, val = parseFloat(e.target.value);
+    if(!state.settings.budgets) state.settings.budgets = {};
+    if(isFinite(val) && val > 0) state.settings.budgets[cat] = val; else delete state.settings.budgets[cat];
+    await persist(); renderDashboard(); renderStats();
+  }));
+}
+
+function setupSettings(){
+  document.getElementById('currency-select').addEventListener('change', async e => {
+    state.settings.currency = e.target.value; await persist(); renderAll();
+  });
+  document.getElementById('payday-input').addEventListener('change', async e => {
+    const v = parseInt(e.target.value);
+    state.settings.payday = (isFinite(v) && v >= 1 && v <= 28) ? v : null;
+    await persist(); renderDashboard(); renderGoals();
+  });
+  document.getElementById('rate-override-value').addEventListener('change', async e => {
+    if(document.getElementById('tgl-rate-override').classList.contains('on')){
+      const v = parseFloat(e.target.value);
+      state.settings.monthlySavingsOverride = isFinite(v) ? v : null;
+      await persist(); renderDashboard();
+    }
+  });
+  document.getElementById('export-backup-btn').addEventListener('click', async () => {
+    const ok = await ipcRenderer.invoke('dialog:exportBackup', state);
+    toast(ok ? 'Sauvegarde exportée.' : 'Export annulé.');
+  });
+  document.getElementById('import-backup-btn').addEventListener('click', async () => {
+    const r = await ipcRenderer.invoke('dialog:importBackup'); if(!r) return;
+    if(r.error){ toast('Fichier invalide.'); return; }
+    if(!window.confirm('Remplacer tes données actuelles ?')) return;
+    state = { settings:{currency:'EUR',monthlySavingsOverride:null,payday:null,lightMode:false,budgets:{},...(r.settings||{})}, transactions:Array.isArray(r.transactions)?r.transactions:[], goals:Array.isArray(r.goals)?r.goals:[], recurring:Array.isArray(r.recurring)?r.recurring:[] };
+    await persist(); applyTheme(); renderAll(); toast('Sauvegarde importée.');
+  });
+  document.getElementById('reset-data-btn').addEventListener('click', async () => {
+    if(!window.confirm('Supprimer toutes les données ?')) return;
+    state.transactions = []; state.goals = []; state.recurring = [];
+    await persist(); renderAll(); toast('Données réinitialisées.');
+  });
+}
 
 // ── Init ──
 function renderAll(){renderDashboard();renderTransactions();renderRecurring();renderGoals();renderStats();renderSettings();}
@@ -801,6 +921,8 @@ async function init(){
 // Expose to HTML onclick attributes
 window.installUpdate = installUpdate;
 window.sendContact = sendContact;
+window.toggleStartup = toggleStartup;
+window.setThemeFromSettings = setThemeFromSettings;
 
 document.addEventListener('DOMContentLoaded',init);
 })();

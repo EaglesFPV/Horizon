@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path  = require('path');
 const fs    = require('fs');
@@ -28,7 +28,12 @@ function saveData(data) { fs.writeFileSync(DATA_FILE, JSON.stringify(data, null,
 // ── Single instance lock ──────────────────────────────────────────────────────
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) { app.quit(); process.exit(0); }
-app.on('second-instance', () => { if (mainWindow) { if (mainWindow.isMinimized()) mainWindow.restore(); mainWindow.focus(); } });
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
 
 let mainWindow;
 
@@ -41,78 +46,147 @@ function createWindow() {
     show: false,
     webPreferences: { nodeIntegration: true, contextIsolation: false }
   });
+
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    try { autoUpdater.checkForUpdatesAndNotify(); } catch {}
+  });
+
+  // Quand la fenêtre est détruite → libérer la référence
+  mainWindow.on('closed', () => {
+    mainWindow = null;
   });
 }
 
+// ── Auto-updater ──────────────────────────────────────────────────────────────
 function setupAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
-  autoUpdater.on('update-available',  info => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('update-available',  info.version); });
-  autoUpdater.on('update-downloaded', info => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('update-downloaded', info.version); });
-  autoUpdater.on('error', () => {});
-  setTimeout(() => { try { autoUpdater.checkForUpdates(); } catch {} }, 3000);
+  autoUpdater.on('update-available',  info => {
+    if (mainWindow && !mainWindow.isDestroyed())
+      mainWindow.webContents.send('update-available', info.version);
+  });
+  autoUpdater.on('update-downloaded', info => {
+    if (mainWindow && !mainWindow.isDestroyed())
+      mainWindow.webContents.send('update-downloaded', info.version);
+  });
+  autoUpdater.on('error', () => {}); // silencieux en prod
+  setTimeout(() => { try { autoUpdater.checkForUpdates(); } catch {} }, 4000);
 }
 
-app.whenReady().then(() => { createWindow(); setupAutoUpdater(); });
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+app.whenReady().then(() => {
+  createWindow();
+  setupAutoUpdater();
+});
 
-// ── Window controls ──────────────────────────────────────────────────────────
-ipcMain.on('window-minimize', () => mainWindow.minimize());
-ipcMain.on('window-maximize', () => mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize());
-ipcMain.on('window-close',   () => app.quit());
+// Toujours quitter quand toutes les fenêtres sont fermées (Windows/Linux)
+app.on('window-all-closed', () => { app.quit(); });
 
-// ── Data ─────────────────────────────────────────────────────────────────────
-ipcMain.handle('data:load',  ()         => loadData());
-ipcMain.handle('data:save',  (_, data)  => { saveData(data); return true; });
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
 
-// ── Dialogs ──────────────────────────────────────────────────────────────────
+// ── Window controls ───────────────────────────────────────────────────────────
+// Utiliser mainWindow.close() et non app.quit() — permet à l'installateur
+// et à l'OS (Alt+F4, WM_CLOSE) de fermer l'app proprement via la même chaîne
+ipcMain.on('window-minimize', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.minimize();
+});
+ipcMain.on('window-maximize', () => {
+  if (mainWindow && !mainWindow.isDestroyed())
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+});
+ipcMain.on('window-close', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+  else app.quit();
+});
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+ipcMain.handle('data:load',  ()        => loadData());
+ipcMain.handle('data:save',  (_, data) => { saveData(data); return true; });
+
+// ── Dialogs ───────────────────────────────────────────────────────────────────
 ipcMain.handle('dialog:pickCSV', async () => {
-  const r = await dialog.showOpenDialog(mainWindow, { title: 'Importer un relevé (CSV)', properties: ['openFile'], filters: [{ name: 'CSV', extensions: ['csv','txt'] }] });
+  const r = await dialog.showOpenDialog(mainWindow, {
+    title: 'Importer un relevé (CSV)',
+    properties: ['openFile'],
+    filters: [{ name: 'CSV', extensions: ['csv', 'txt'] }]
+  });
   if (r.canceled || !r.filePaths.length) return null;
   return { path: r.filePaths[0], content: fs.readFileSync(r.filePaths[0], 'utf-8') };
 });
+
 ipcMain.handle('dialog:exportBackup', async (_, data) => {
-  const r = await dialog.showSaveDialog(mainWindow, { title: 'Exporter une sauvegarde', defaultPath: `horizon-sauvegarde-${new Date().toISOString().slice(0,10)}.json`, filters: [{ name: 'JSON', extensions: ['json'] }] });
+  const r = await dialog.showSaveDialog(mainWindow, {
+    title: 'Exporter une sauvegarde',
+    defaultPath: `horizon-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`,
+    filters: [{ name: 'JSON', extensions: ['json'] }]
+  });
   if (r.canceled || !r.filePath) return false;
   fs.writeFileSync(r.filePath, JSON.stringify(data, null, 2), 'utf-8');
   return true;
 });
+
 ipcMain.handle('dialog:importBackup', async () => {
-  const r = await dialog.showOpenDialog(mainWindow, { title: 'Importer une sauvegarde', properties: ['openFile'], filters: [{ name: 'JSON', extensions: ['json'] }] });
+  const r = await dialog.showOpenDialog(mainWindow, {
+    title: 'Importer une sauvegarde',
+    properties: ['openFile'],
+    filters: [{ name: 'JSON', extensions: ['json'] }]
+  });
   if (r.canceled || !r.filePaths.length) return null;
   try { return JSON.parse(fs.readFileSync(r.filePaths[0], 'utf-8')); }
   catch { return { error: 'invalid_json' }; }
 });
 
-// ── App info ─────────────────────────────────────────────────────────────────
+// ── App info & updates ────────────────────────────────────────────────────────
 ipcMain.handle('app:info', () => ({ version: app.getVersion() }));
-ipcMain.on('check-updates',  () => { try { autoUpdater.checkForUpdates(); } catch {} });
+
+ipcMain.on('check-updates', () => {
+  try { autoUpdater.checkForUpdates(); } catch {}
+});
+
 ipcMain.on('update-install', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) { mainWindow.removeAllListeners('close'); mainWindow.hide(); }
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.removeAllListeners('close');
+    mainWindow.hide();
+  }
   setImmediate(() => autoUpdater.quitAndInstall(true, true));
+});
+
+
+// ── Démarrage automatique ─────────────────────────────────────────────────────
+ipcMain.handle('get-startup', () => {
+  return app.getLoginItemSettings().openAtLogin;
+});
+ipcMain.on('set-startup', (_, val) => {
+  app.setLoginItemSettings({ openAtLogin: val });
 });
 
 // ── Contact form (EmailJS) ────────────────────────────────────────────────────
 ipcMain.on('send-contact', (e, { name, email, message }) => {
   const body = JSON.stringify({
-    service_id:  'service_xyj3ngm',
-    template_id: 'template_dfohpm8',
-    user_id:     '4Q0Bp9F4uPxecu8vf',
-    accessToken: 'dZuO8XftuVqLiGDdg_dXy',
+    service_id:      'service_xyj3ngm',
+    template_id:     'template_dfohpm8',
+    user_id:         '4Q0Bp9F4uPxecu8vf',
+    accessToken:     'dZuO8XftuVqLiGDdg_dXy',
     template_params: { name, email, message, title: 'Horizon Budget' }
   });
   const req = https.request({
-    hostname: 'api.emailjs.com', path: '/api/v1.0/email/send', method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body), 'origin': 'https://dashboard.emailjs.com' }
+    hostname: 'api.emailjs.com',
+    path: '/api/v1.0/email/send',
+    method: 'POST',
+    headers: {
+      'Content-Type':   'application/json',
+      'Content-Length': Buffer.byteLength(body),
+      'origin':         'https://dashboard.emailjs.com'
+    }
   }, res => {
-    let d = ''; res.on('data', c => d += c);
+    let d = '';
+    res.on('data', c => d += c);
     res.on('end', () => e.reply('contact-result', { ok: res.statusCode === 200 }));
   });
   req.on('error', () => e.reply('contact-result', { ok: false }));
-  req.write(body); req.end();
+  req.write(body);
+  req.end();
 });
