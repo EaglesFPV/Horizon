@@ -11,8 +11,7 @@
   },
   "devDependencies": {
     "electron": "^31.3.1",
-    "electron-builder": "^24.13.3",
-    "electron-updater": "^6.3.9"
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.horizon.budget",
@@ -41,5 +40,8 @@
         "provider": "github"
       }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   }
 }
