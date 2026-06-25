@@ -1,66 +1,129 @@
+<div align="center">
+
 # Horizon
 
-Application de bureau (Windows) pour suivre ton budget et savoir, à tout moment, dans combien de temps tu pourras t'offrir tes prochains achats.
+**Gestionnaire de budget et d'objectifs d'achat pour Windows**
 
-## Fonctionnalités
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Windows-lightgrey?style=flat-square)
+![Electron](https://img.shields.io/badge/Electron-31-47848F?style=flat-square&logo=electron)
+![License](https://img.shields.io/badge/licence-MIT-green?style=flat-square)
 
-- Suivi du solde, des revenus et des dépenses, avec catégories
-- Import CSV des relevés bancaires (détection automatique des colonnes, gère les formats à montant signé ou à colonnes Débit/Crédit séparées)
-- Liste d'objectifs d'achat classés par priorité, avec estimation du temps restant avant de pouvoir se les offrir
-- Le calcul se met à jour automatiquement dès qu'une transaction est ajoutée : un revenu supplémentaire raccourcit immédiatement le délai de tous tes objectifs
-- Statistiques : revenus/dépenses par mois, dépenses par catégorie
-- Sauvegarde / restauration manuelle (export-import JSON)
-- Toutes les données restent en local, sur ta machine — rien n'est envoyé ailleurs
+</div>
 
-## Comment ça calcule le temps avant un achat
+---
 
-Horizon calcule ton rythme d'épargne moyen sur tes 3 derniers mois complets (ou tu peux le fixer toi-même dans Paramètres). Tes objectifs sont financés dans l'ordre de priorité que tu définis : l'argent disponible (solde + épargne à venir) finance d'abord le premier objectif de la liste, puis ce qui reste finance le suivant, etc. Si tu reçois un revenu imprévu, ton solde augmente immédiatement et tous les délais se recalculent en conséquence — sans rien à faire de ta part.
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/download.svg" width="18"/> Téléchargement
 
-## Lancer l'app en local
+Rendez-vous dans l'onglet [**Releases**](../../releases/latest) et téléchargez `Horizon-Setup-x.x.x.exe`.
 
-Prérequis : [Node.js](https://nodejs.org) (version 20 recommandée).
+---
 
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/star.svg" width="18"/> Fonctionnalités
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/trending-up.svg" width="14"/> Tableau de bord
+- Solde actuel et rythme d'épargne mensuel calculé automatiquement
+- Trajectoire visuelle vers tes objectifs (runway) avec dates précises si jour de paie configuré
+- Alertes de dépassement de budget par catégorie
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/dollar-sign.svg" width="14"/> Transactions
+- Saisie manuelle de revenus et dépenses avec catégories
+- Import CSV des relevés bancaires — détection automatique des colonnes, gère les formats Débit/Crédit séparés et les montants signés
+- Recherche et filtres par type, mois ou mot-clé
+- Édition et suppression de chaque transaction
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/refresh-cw.svg" width="14"/> Récurrents
+- Loyer, salaire, abonnements — configurés une fois, générés automatiquement chaque mois
+- Génération rétroactive si l'app n'a pas été ouverte depuis plusieurs mois
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/target.svg" width="14"/> Objectifs
+- Liste d'objectifs d'achat priorisés avec prix
+- Calcul du délai avant de pouvoir se les offrir (waterfall : le premier objectif est financé avant le suivant)
+- Date exacte d'achat estimée si le jour de paie est configuré
+- Marquage comme « acheté » avec enregistrement automatique de la dépense
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/bar-chart-2.svg" width="14"/> Statistiques
+- Courbe d'évolution du solde sur 12 mois
+- Graphe revenus vs dépenses par mois
+- Répartition des dépenses par catégorie avec indicateur de dépassement
+
+### <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/settings.svg" width="14"/> Paramètres
+- Devise configurable (€, $, £, CHF)
+- Jour de paie pour des projections à la date exacte
+- Rythme d'épargne manuel ou calculé automatiquement
+- Budgets mensuels par catégorie de dépense
+- Démarrage automatique avec Windows
+- Thème clair et thème sombre
+- Export et import de sauvegarde JSON
+
+---
+
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/command.svg" width="18"/> Raccourcis clavier
+
+| Raccourci | Action |
+|---|---|
+| `Ctrl + 1` | Tableau de bord |
+| `Ctrl + 2` | Transactions |
+| `Ctrl + 3` | Récurrents |
+| `Ctrl + 4` | Objectifs |
+| `Ctrl + 5` | Statistiques |
+| `Ctrl + 6` | Paramètres |
+| `Échap` | Fermer un modal |
+
+---
+
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/database.svg" width="18"/> Données & confidentialité
+
+Toutes les données restent **en local** sur ta machine, dans le dossier de données utilisateur d'Electron (`%APPDATA%\horizon\`). Rien n'est envoyé sur un serveur. Utilise **Paramètres → Exporter une sauvegarde** pour garder une copie ailleurs.
+
+---
+
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/git-branch.svg" width="18"/> Build
+
+Les releases sont générées automatiquement par GitHub Actions.
+
+**Build de test** (push sur `main`) — produit un `.exe` en artefact de build :
+```bash
+git push origin main
+```
+
+**Release officielle** (workflow manuel) :
+```bash
+# Depuis l'onglet Actions → Release Horizon → Run workflow → entrer la version
+# ex : 1.0.0
+```
+
+Ou depuis la ligne de commande :
 ```bash
 npm install
-npm start
-```
-
-## Construire l'exécutable Windows
-
-```bash
 npm run build
+# → dist/Horizon-Setup-x.x.x.exe
 ```
 
-L'installeur sera généré dans `dist/Horizon-Setup-<version>.exe`.
+---
 
-## Construction automatique via GitHub Actions
+## <img src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/tool.svg" width="18"/> Dépannage
 
-Le dossier `.github/workflows/` contient deux workflows, sur le même modèle que tes projets précédents :
+<details>
+<summary><strong>L'application ne démarre pas</strong></summary>
 
-- **build.yml** : se déclenche à chaque push sur `main`, construit l'app et dépose l'exécutable en artefact de build (téléchargeable depuis l'onglet Actions du repo).
-- **release.yml** : à déclencher manuellement (`workflow_dispatch`) avec un numéro de version. Construit l'app et publie une Release GitHub avec l'installeur `.exe` et `latest.yml` (utilisé pour les mises à jour automatiques si tu ajoutes `electron-updater` plus tard).
+Vérifie que tu as bien installé la dernière version depuis l'onglet Releases. Si le problème persiste, supprime le dossier `%APPDATA%\horizon\` et relance.
+</details>
 
-Il suffit de pousser ce projet sur un repo GitHub pour que ça fonctionne, comme pour tes anciens projets.
+<details>
+<summary><strong>L'import CSV ne détecte pas mes colonnes</strong></summary>
 
-## Où sont stockées tes données
+Horizon supporte les délimiteurs `,` et `;` ainsi que les formats de date `YYYY-MM-DD` et `DD/MM/YYYY`. Ouvre la fenêtre d'import et ajuste manuellement les colonnes si la détection automatique est incorrecte.
+</details>
 
-Dans un fichier `horizon-data.json`, dans le dossier de données utilisateur d'Electron (sur Windows : `%APPDATA%/horizon/`). Utilise le bouton **Exporter une sauvegarde** dans Paramètres pour en garder une copie ailleurs (clé USB, cloud...).
+<details>
+<summary><strong>Les transactions récurrentes ne se génèrent pas</strong></summary>
 
-## Pourquoi pas de connexion bancaire automatique pour l'instant
+Elles sont générées au démarrage de l'application, uniquement si le jour du mois configuré est passé. Si tu viens de configurer un récurrent pour le 1er du mois et que nous sommes le 15, la prochaine génération aura lieu le mois prochain au démarrage.
+</details>
 
-L'option gratuite la plus simple pour ça (GoCardless Bank Account Data) a fermé les inscriptions aux nouveaux comptes mi-2025. L'alternative actuelle la plus viable (Enable Banking) nécessite un petit serveur backend pour gérer l'authentification de façon sécurisée, et la réglementation européenne impose de toute façon une reconnexion à ta banque tous les 90 jours — donc même "automatique" veut dire "presque automatique".
+<details>
+<summary><strong>La mise à jour automatique ne fonctionne pas</strong></summary>
 
-Le code est organisé pour que ça reste possible d'ajouter ça plus tard sans tout réécrire : toute la logique de calcul (`src/calc.js`) ne connaît que la liste des transactions, peu importe d'où elles viennent. Un futur module de synchronisation bancaire n'aurait qu'à ajouter des transactions au même tableau — exactement comme le fait l'import CSV aujourd'hui.
-
-## Structure du projet
-
-```
-src/
-  main.js       Processus principal Electron (fenêtre, fichiers, IPC)
-  preload.js    Pont sécurisé entre l'interface et le processus principal
-  calc.js       Logique pure : solde, rythme d'épargne, projections d'objectifs
-  csv.js        Lecture des fichiers CSV
-  app.js        Logique de l'interface (rendu, formulaires, événements)
-  index.html    Structure de la page
-  style.css     Styles
-```
+La mise à jour automatique nécessite que l'application soit installée via le `.exe` de la page Releases. Elle ne fonctionne pas en mode développement (`npm start`).
+</details>
