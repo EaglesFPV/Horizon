@@ -174,7 +174,27 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
 .kbd{display:inline-block;background:var(--surface-alt);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--font-m);font-size:11px;color:var(--text-muted);}
 
-  </style>
+  
+/* ── Banque ── */
+.bank-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;}
+.bank-status.connected{background:var(--positive-soft);color:var(--positive);}
+.bank-status.expired{background:var(--negative-soft);color:var(--negative);}
+.bank-status.pending{background:var(--accent-soft);color:var(--accent);}
+.bank-card{background:var(--surface-alt);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.bank-card-main{flex:1;min-width:0;}
+.bank-card-name{font-weight:700;font-size:13.5px;}
+.bank-card-meta{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+.bank-card-actions{display:flex;gap:6px;}
+.setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.step{display:flex;align-items:flex-start;gap:12px;}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#14110A;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:12.5px;color:var(--text-muted);line-height:1.5;}
+.step-text a{color:var(--accent);}
+.bank-auth-overlay{position:absolute;inset:0;background:var(--surface-alt);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -197,6 +217,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
     <div id="sb-nav-list">
       <button class="nav-item is-active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="#D4A24E" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Tableau de bord<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
       <button class="nav-item" data-view="transactions"><svg viewBox="0 0 24 24" fill="none" stroke="#5B8DEF" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>Transactions<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
+      <button class="nav-item" data-view="bank"><svg viewBox="0 0 24 24" fill="none" stroke="#5BC4EF" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Banque<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
       <button class="nav-item" data-view="recurring"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Récurrents<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
       <button class="nav-item" data-view="goals"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA876" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Objectifs<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
       <button class="nav-item" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="#9B7FE8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Statistiques<span class="drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span></button>
@@ -292,7 +313,59 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
       <div class="card"><div class="card-head"><span class="eyebrow">Dépenses par catégorie</span></div><div id="category-chart"></div></div>
     </section>
 
-    <!-- SETTINGS -->
+    <!-- BANK -->
+    <section class="view" id="view-bank">
+      <header class="view-header"><h1>Connexion bancaire</h1><p class="subtitle">Synchronise tes transactions directement depuis ta banque via Enable Banking.</p></header>
+
+      <!-- Étape 1 : Configuration -->
+      <div class="set-card" id="bank-setup-card">
+        <div class="set-card-title">Configuration Enable Banking</div>
+        <div style="padding:14px 0 6px;">
+          <div class="setup-steps">
+            <div class="step"><div class="step-num">1</div><div class="step-text">Crée un compte gratuit sur <a href="#" id="eb-signup-link">enablebanking.com</a>, puis crée une application dans le <strong>Control Panel</strong> (menu API applications).<br>Utilise <code style="background:var(--surface-alt);padding:1px 5px;border-radius:3px;">http://localhost:27182/horizon/callback</code> comme URL de redirection.</div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">Télécharge le fichier <strong>.pem</strong> généré lors de la création de l'application — c'est ta clé privée. Conserve-la en lieu sûr.</div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">Copie l'<strong>ID de ton application</strong> (format UUID visible dans le Control Panel) et renseigne-le ci-dessous.</div></div>
+          </div>
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">ID de l'application</div><div class="set-desc">UUID visible dans Enable Banking Control Panel</div></div>
+          <input type="text" id="bank-app-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="width:340px;font-family:var(--font-m);font-size:12px;"/>
+        </div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Clé privée (.pem)</div><div class="set-desc" id="pem-path-label">Aucun fichier sélectionné</div></div>
+          <button class="btn-secondary" id="pick-pem-btn">Parcourir…</button>
+        </div>
+        <div style="padding:12px 0 4px;"><button class="btn-primary" id="bank-save-config-btn" style="width:100%;justify-content:center;display:flex;">Valider la configuration</button></div>
+      </div>
+
+      <!-- Connecter une banque -->
+      <div class="set-card" id="bank-connect-card" style="display:none;">
+        <div class="set-card-title">Connecter une banque</div>
+        <div class="set-item">
+          <div class="set-item-left"><div class="set-name">Banque</div><div class="set-desc">Sélectionne ta banque française</div></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="bank-select" style="width:240px;"><option value="">Chargement…</option></select>
+            <button class="btn-primary" id="bank-connect-btn">Connecter</button>
+          </div>
+        </div>
+        <div class="set-item" style="position:relative;min-height:40px;" id="bank-auth-status-row">
+          <div class="set-item-left"><div class="set-name">Statut</div><div id="bank-connect-status" class="set-desc">Prêt.</div></div>
+        </div>
+      </div>
+
+      <!-- Comptes connectés -->
+      <div class="card" id="bank-accounts-card" style="display:none;">
+        <div class="card-head">
+          <span class="eyebrow">Comptes connectés</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;cursor:pointer;"><input type="checkbox" id="bank-auto-sync"/> Sync au démarrage</label>
+          </div>
+        </div>
+        <div id="bank-sessions-list"></div>
+      </div>
+    </section>
+
+        <!-- SETTINGS -->
     <section class="view" id="view-settings">
       <header class="view-header"><h1>Paramètres</h1><p class="subtitle">Configure Horizon selon tes préférences.</p></header>
       <div class="set-card">
@@ -735,6 +808,253 @@ function setupSettings(){
   document.getElementById('reset-data-btn').addEventListener('click',async()=>{if(!window.confirm('Supprimer toutes les données ?'))return;state.transactions=[];state.goals=[];state.recurring=[];await persist();renderAll();toast('Données réinitialisées.');});
 }
 
+
+// ── Banque ─────────────────────────────────────────────────────────────────────
+let bankConfig = { appId: null, pemPath: null, autoSync: false };
+let bankSessions = []; // { sessionId, bankName, bankCountry, accounts, lastSync }
+
+async function initBank() {
+  // Charger config depuis l'état
+  if (state.bankConfig) bankConfig = { ...bankConfig, ...state.bankConfig };
+  if (state.bankSessions) bankSessions = state.bankSessions;
+  renderBank();
+  if (bankConfig.appId && bankConfig.pemPath && bankConfig.autoSync) {
+    await syncAllSessions(true);
+  }
+}
+
+async function persistBank() {
+  state.bankConfig = bankConfig;
+  state.bankSessions = bankSessions;
+  await persist();
+}
+
+function renderBank() {
+  const configured = !!(bankConfig.appId && bankConfig.pemPath);
+
+  // Setup card
+  const setupCard = document.getElementById('bank-setup-card');
+  const connectCard = document.getElementById('bank-connect-card');
+  const accountsCard = document.getElementById('bank-accounts-card');
+
+  // Toujours montrer la config (pour modifier)
+  if (bankConfig.appId) document.getElementById('bank-app-id').value = bankConfig.appId;
+  if (bankConfig.pemPath) document.getElementById('pem-path-label').textContent = bankConfig.pemPath.split(/[\\/]/).pop();
+
+  connectCard.style.display = configured ? '' : 'none';
+  accountsCard.style.display = (configured && bankSessions.length) ? '' : 'none';
+
+  // Auto-sync toggle
+  const autoSyncChk = document.getElementById('bank-auto-sync');
+  if (autoSyncChk) autoSyncChk.checked = !!bankConfig.autoSync;
+
+  renderBankSessions();
+}
+
+function renderBankSessions() {
+  const list = document.getElementById('bank-sessions-list');
+  if (!list) return;
+  if (!bankSessions.length) { list.innerHTML = '<div class="tx-empty">Aucun compte connecté.</div>'; return; }
+
+  list.innerHTML = bankSessions.map((s, i) => {
+    const isExpired = s.validUntil && new Date(s.validUntil) < new Date();
+    const statusCls = isExpired ? 'expired' : 'connected';
+    const statusLbl = isExpired ? 'Expiré' : 'Actif';
+    const lastSync = s.lastSync ? `Dernière sync : ${new Date(s.lastSync).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}` : 'Jamais synchronisé';
+    const expiry = s.validUntil ? `Expire le ${new Date(s.validUntil).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })}` : '';
+    const accounts = (s.accounts || []).map(a => `${a.name || a.accountId || 'Compte'} (${a.currency || '€'})`).join(', ') || 'Comptes non chargés';
+    return `<div class="bank-card">
+      <div class="bank-card-main">
+        <div class="bank-card-name">${esc(s.bankName)} <span class="bank-status ${statusCls}">${statusLbl}</span></div>
+        <div class="bank-card-meta">${esc(accounts)}</div>
+        <div class="bank-card-meta">${lastSync}${expiry ? ' · ' + expiry : ''}</div>
+      </div>
+      <div class="bank-card-actions">
+        <button class="btn-secondary" id="sync-btn-${i}" onclick="syncSession(${i})">Synchroniser</button>
+        <button class="icon-btn danger" onclick="disconnectSession(${i})" title="Déconnecter">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setupBankListeners() {
+  // Lien signup Enable Banking
+  document.getElementById('eb-signup-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    shell.openExternal('https://enablebanking.com/get-started/');
+  });
+
+  // Picker .pem
+  document.getElementById('pick-pem-btn')?.addEventListener('click', async () => {
+    const path = await ipcRenderer.invoke('bank:pick-pem');
+    if (!path) return;
+    bankConfig.pemPath = path;
+    document.getElementById('pem-path-label').textContent = path.split(/[\\/]/).pop();
+  });
+
+  // Sauvegarder config
+  document.getElementById('bank-save-config-btn')?.addEventListener('click', async () => {
+    const appId = document.getElementById('bank-app-id').value.trim();
+    if (!appId) { toast('Renseigne l\'ID de l\'application.'); return; }
+    if (!bankConfig.pemPath) { toast('Sélectionne ta clé privée .pem.'); return; }
+    bankConfig.appId = appId;
+    await persistBank();
+    toast('Configuration sauvegardée.');
+    // Charger la liste des banques
+    await loadAspsps();
+    renderBank();
+  });
+
+  // Auto-sync toggle
+  document.getElementById('bank-auto-sync')?.addEventListener('change', async e => {
+    bankConfig.autoSync = e.target.checked;
+    await persistBank();
+    toast(bankConfig.autoSync ? 'Synchronisation automatique activée.' : 'Synchronisation automatique désactivée.');
+  });
+
+  // Connecter une banque
+  document.getElementById('bank-connect-btn')?.addEventListener('click', startBankAuth);
+
+  // Recevoir le résultat de l'auth
+  ipcRenderer.on('bank:auth-pending', () => {
+    document.getElementById('bank-connect-status').innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><div class="spinner"></div>En attente de ton autorisation dans le navigateur…</div>';
+  });
+
+  ipcRenderer.on('bank:auth-result', async (_, result) => {
+    if (!result.ok) {
+      document.getElementById('bank-connect-status').textContent = `Erreur : ${result.error}`;
+      toast('Connexion échouée.');
+      return;
+    }
+    document.getElementById('bank-connect-status').textContent = 'Autorisation reçue. Chargement des comptes…';
+    // Récupérer les comptes
+    const accountsRes = await ipcRenderer.invoke('bank:accounts', {
+      appId: bankConfig.appId, pemPath: bankConfig.pemPath, sessionId: result.sessionId
+    });
+    const accounts = accountsRes.ok ? (accountsRes.accounts || []).map(a => ({
+      accountId: a.uid || a.account_id || '',
+      name: a.name || a.identification?.iban || '',
+      currency: a.currency || 'EUR',
+      iban: a.identification?.iban || ''
+    })) : [];
+
+    const validUntil = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    bankSessions.push({
+      sessionId: result.sessionId,
+      bankName: result.bankName,
+      bankCountry: result.bankCountry,
+      accounts,
+      lastSync: null,
+      validUntil
+    });
+    await persistBank();
+    renderBank();
+    document.getElementById('bank-connect-status').textContent = 'Compte connecté avec succès !';
+    toast(`${result.bankName} connecté.`);
+    // Sync immédiate
+    await syncSession(bankSessions.length - 1);
+  });
+}
+
+async function loadAspsps() {
+  const sel = document.getElementById('bank-select');
+  if (!sel || !bankConfig.appId || !bankConfig.pemPath) return;
+  sel.innerHTML = '<option value="">Chargement…</option>';
+  const r = await ipcRenderer.invoke('bank:aspsps', {
+    appId: bankConfig.appId, pemPath: bankConfig.pemPath, country: 'FR'
+  });
+  if (!r.ok || !r.aspsps?.length) {
+    sel.innerHTML = '<option value="">Aucune banque disponible</option>';
+    return;
+  }
+  sel.innerHTML = r.aspsps.map(a => `<option value="${esc(a.name)}">${esc(a.name)}</option>`).join('');
+}
+
+async function startBankAuth() {
+  const bankName = document.getElementById('bank-select').value;
+  if (!bankName) { toast('Sélectionne une banque.'); return; }
+  document.getElementById('bank-connect-status').textContent = 'Ouverture du navigateur…';
+  await ipcRenderer.invoke('bank:start-auth', {
+    appId: bankConfig.appId, pemPath: bankConfig.pemPath,
+    bankName, bankCountry: 'FR'
+  });
+}
+
+async function syncSession(idx) {
+  const session = bankSessions[idx];
+  if (!session) return;
+  const btn = document.getElementById(`sync-btn-${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Sync…'; }
+
+  let totalImported = 0;
+
+  for (const acc of session.accounts || []) {
+    if (!acc.accountId) continue;
+    const dateFrom = session.lastSync
+      ? session.lastSync.slice(0, 10)
+      : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    const r = await ipcRenderer.invoke('bank:transactions', {
+      appId: bankConfig.appId, pemPath: bankConfig.pemPath,
+      sessionId: session.sessionId, accountId: acc.accountId, dateFrom
+    });
+
+    if (!r.ok) continue;
+
+    for (const tx of r.transactions || []) {
+      const bankTxId = tx.transaction_id || tx.entry_reference || `${tx.booking_date}-${tx.transaction_amount?.amount}`;
+      // Déduplication
+      if (state.transactions.some(t => t.bankTxId === bankTxId)) continue;
+      const amount = parseFloat(tx.transaction_amount?.amount || 0);
+      if (amount === 0) continue;
+      const date = (tx.booking_date || tx.value_date || new Date().toISOString()).slice(0, 10);
+      const note = tx.remittance_information_unstructured
+        || (tx.remittance_information_structured?.reference)
+        || tx.creditor_name || tx.debtor_name || '';
+      state.transactions.push({
+        id: genId(),
+        date,
+        amount,
+        category: amount >= 0 ? 'Autre revenu' : 'Autre dépense',
+        note: String(note).slice(0, 200),
+        bankTxId,
+        bankSessionId: session.sessionId
+      });
+      totalImported++;
+    }
+  }
+
+  session.lastSync = new Date().toISOString();
+  await persist();
+  await persistBank();
+  renderBank();
+  renderTransactions();
+  renderDashboard();
+  renderGoals();
+  renderStats();
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Synchroniser'; }
+  toast(totalImported > 0
+    ? `${totalImported} nouvelle${totalImported > 1 ? 's' : ''} transaction${totalImported > 1 ? 's' : ''} importée${totalImported > 1 ? 's' : ''}.`
+    : 'Déjà à jour.');
+}
+
+async function syncAllSessions(silent) {
+  for (let i = 0; i < bankSessions.length; i++) {
+    await syncSession(i);
+  }
+  if (!silent) toast('Toutes les banques synchronisées.');
+}
+
+async function disconnectSession(idx) {
+  const s = bankSessions[idx];
+  if (!window.confirm(`Déconnecter ${s.bankName} ?\nLes transactions déjà importées seront conservées.`)) return;
+  bankSessions.splice(idx, 1);
+  await persistBank();
+  renderBank();
+  toast('Compte déconnecté.');
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────────
 function renderAll(){renderDashboard();renderTransactions();renderRecurring();renderGoals();renderStats();renderSettings();}
 async function init(){
@@ -745,10 +1065,13 @@ async function init(){
   applyTheme();
   try{const info=await ipcRenderer.invoke('app:info');const el=document.getElementById('app-version');if(el)el.textContent=info.version;}catch{}
   const changed=applyRecurring();if(changed)await persist();
-  setupNav();setupTxForm();setupGoalForm();setupRecurringForm();setupCsvImport();setupSettings();
+  setupNav();setupTxForm();setupGoalForm();setupRecurringForm();setupCsvImport();setupSettings();setupBankListeners();
   renderAll();
+  await initBank();
   if(changed)toast('Transactions récurrentes générées automatiquement.');
 }
+window.syncSession = syncSession;
+window.disconnectSession = disconnectSession;
 document.addEventListener('DOMContentLoaded',init);
 })();
 
